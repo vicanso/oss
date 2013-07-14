@@ -1,0 +1,42 @@
+.msgList
+  background-color #f2f2f2
+  .title
+    height 30px
+    line-height @height
+    .total
+      display none
+      color #800000
+    .minimize, .maximize
+      float right
+      display block
+      color #0a0a0a
+      opacity 0.6
+    .minimize
+      width 20px
+      height 100%
+      text-align center
+      margin-right 2px
+      font-size 25px
+      line-height 12px
+    .maximize
+      width 10px
+      height 10px
+      border 2px solid #080808
+      margin 4px 4px 0 0
+      display none
+  .items
+    max-height 250px
+    overflow-y scroll
+    .item
+      height 25px
+      line-height @height
+      text-indent 5px
+      overflow hidden
+      padding-right 24px
+      border-bottom 1px solid #e0e0e0
+      &.doing
+        background url(../images/iloading.png) center right no-repeat
+      &:nth-child(2n)
+        background-color #f7f7f7
+      &:nth-child(2n + 1)
+        background-color #eff2ff

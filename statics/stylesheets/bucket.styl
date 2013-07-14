@@ -1,0 +1,67 @@
+.bucketsContainer
+    .bucket
+      $bucketBorder = 1px solid #444
+      $childBorder = 1px solid #222
+      border-top $bucketBorder
+      color #e0e0e0
+      text-align center
+      position relative
+      cursor pointer
+      &:hover
+        .ops
+          display block
+      .ops
+        display none
+        position absolute
+        background-color #333
+        top 32px
+        left 60px
+        width 140px
+        a
+          float left
+          height 40px
+          line-height @height
+          width 69px
+          text-align center
+          border-left 1px solid #222
+          display block
+          color #e0e0e0
+          &:hover
+            background-color #222
+      .iBucket
+        background-position center 10px
+      .arrowLeft
+        display none
+        $arrowLeftHeight = 10px
+        position absolute
+        right -1px
+        top 50%
+        margin-top -($arrowLeftHeight)
+        height 0
+        width 0
+        border-style solid
+        border-width $arrowLeftHeight
+        border-left-width 0
+        border-color transparent
+        border-right-color #f0f0f0
+      &.active, &:hover
+        background-color #222
+      &.active
+        .arrowLeft
+          display block
+        &:hover
+          .arrowLeft
+            display none
+      .icon
+        border-top $childBorder
+        height 40px
+      .name
+        text-align center
+        line-height 30px
+      &:first-child
+        border-top none
+      &:last-child
+        border-bottom $bucketBorder
+        .name
+          border-bottom $childBorder
+

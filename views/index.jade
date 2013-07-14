@@ -1,0 +1,23 @@
+extends ./layout
+block bodyContainer
+  - fileImporter.importJs(['/javascripts/mimesetting.coffee', '/javascripts/msglist.coffee']);
+  - fileImporter.importCss(['/stylesheets/msglist.styl', '/stylesheets/mimesetting.styl'])
+
+  - fileImporter.importCss(['/stylesheets/icon.styl', '/jtui/ui.styl', '/stylesheets/index.styl']);
+  - fileImporter.importJs(['/jtui/ui.coffee', '/javascripts/index.coffee']);
+  include ./leftcontainer
+  #othersContainer
+    #objectTableContainer
+      h3.title.jtGrayGradient Object管理
+      include ./objctrls
+      include ./objecttableview
+      include ./ctrls
+  - fileImporter.importJs(['/javascripts/path.coffee', '/javascripts/objectattribute.coffee']);
+  include ./setting
+  
+  #loginDialog
+
+  #loadingMask
+    a.bgExec(href='javascript:;') 后台执行
+  #msgListContainer
+

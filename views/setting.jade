@@ -1,0 +1,31 @@
+- fileImporter.importJs(['/javascripts/setting.coffee']);
+- fileImporter.importCss(['/stylesheets/setting.styl']);
+#settingContainer
+  .content
+    .globalContainer(title='这些都是全局的一些配置参数，一般保持默认的配置就可以了！')
+      table
+        thead: tr
+          th.attr 属性
+          th 值
+        tbody
+          //- tr
+          //-   td 每页显示数量(1-1000)
+          //-   td: input(type='text', data-key='eachPageSize')
+          //- tr
+          //-   td 每页显示数量(1-1000)
+          //-   td: input(type='text')
+      .btns
+        a.jtBtn.close(href='javascript:;') 关闭
+        a.jtBtn.confirm(href='javascript:;') 保存
+  .content
+    .resHeaderContainer
+      table
+        thead: tr
+          th 文件类型
+          th 响应头
+          th 响应值
+        tbody
+      .btns
+        a.jtBtn.close(href='javascript:;') 关闭
+        a.jtBtn.confirm(href='javascript:;') 保存
+        a.jtBtn.addRule(href='javascript:;') 添加新规则

@@ -1,0 +1,36 @@
+@import './mixins/vicanso'
+#settingContainer
+  display none
+  position absolute
+  top 50px
+  left 50%
+  width 500px
+  margin-left -(@width / 2)
+  background-color #f2f2f2
+  .nav li
+    width auto
+  .btns
+    overflow hidden
+    margin-top 5px
+    .jtBtn
+      float right
+      margin-left 10px
+  .globalContainer
+    tr
+      border 1px solid #eee
+      height 30px
+      line-height @height
+      .attr
+        width 150px
+      input
+        width 100%
+  .resHeaderContainer
+  	tr
+      height 30px
+      line-height @height
+    .jtSelect
+      width 95%
+      input.userInput
+        width 125px
+    input
+      width 95%

@@ -1,0 +1,75 @@
+@import './mixins/vicanso'
+.objCtrlsContainer
+  .btns
+    float right
+    margin 5px 20px 0 0
+    .uploadBtn
+      position relative
+    .btn, .searchContainer
+      margin-left 10px
+      float left
+    .searchContainer
+      height 30px
+      line-height @height
+      border 1px solid #ccc
+      border-radius 5px
+      background-color #fff
+      position relative
+      z-index 9
+      &:hover
+        .advancedSearch
+          display block
+      .search
+        cursor pointer
+        padding 8px 15px
+        border-left none
+        background url(../images/isearch.png) no-repeat center
+      .keyword
+        border-radius 0
+        border none
+        height 100%
+        text-indent 10px
+        &:focus
+          border none
+      .advancedSearch
+        display none
+        border 1px solid #ccc
+        border-top none
+        background-color #fff
+        position absolute
+        left -1px
+        top 28px
+        width 100%
+        .selectContainer
+          margin 0 5px
+          border-top 1px solid #e0e0e0
+          .tip
+            margin-right 10px
+            padding-left 5px
+  .paths
+    height 40px
+    line-height @height
+    .path
+      padding-right 10px
+      margin-right 10px
+      background url(../images/iarrow-left.png) no-repeat center right
+      &.active
+        background-image none
+        color #2a2a2a
+        cursor default
+.createFolderContainer
+  .folderName
+    width 83%
+  .rules
+    margin-top 10px
+    li
+      list-style inside square
+.uploadSwfContainer
+  position absolute
+  left 1px
+  top 1px
+  width 56px
+  height 30px
+  opacity 0
+#SWFUpload_0
+  opacity 0

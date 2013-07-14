@@ -1,0 +1,91 @@
+@import './mixins/vicanso'
+html, body
+  height 100%
+  overflow hidden
+  font-family "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-size 13px
+  line-height 20px
+  background-image url(../images/bodybg.jpg)
+  background-size cover
+  -webkit-box-sizing border-box
+.normalFont
+  font-size 13px
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td 
+  margin 0
+  padding 0
+  border 0
+  font-weight inherit
+  font-style inherit
+  vertical-align baseline
+table
+  border-collapse collapse
+  border-spacing 0
+fieldset, img
+  border 0
+address, caption, cite, code, dfn, em, strong, th, var
+  font-style normal
+  font-weight normal
+li
+  list-style none
+caption, th
+  text-align left
+h1, h2, h3, h4, h5, h6
+    font-size 100%
+    font-weight normal
+q:before, q:after
+  content ''
+abbr, acronym
+  border 0
+  font-variant normal
+sup
+  vertical-align text-top
+sub
+  vertical-align text-bottom
+input, textarea, select
+  font-family inherit
+  font-size inherit
+  font-weight inherit
+  resize none
+  border 1px solid #c1c1c1
+input, textarea, select
+  *font-size 100%
+legend
+  color #000
+h1
+  font-size 138.5%
+  line-height 32px
+h2
+  font-size 123.1%
+  line-height 24px
+h3
+  font-size 108%
+a
+  color #06c
+  text-decoration none
+table
+  table-layout fixed
+  border-collapse collapse
+  width 100%
+  empty-cells show
+  thead
+    background-color #f3f3f3
+  tbody
+    tr:nth-child(2n)
+      background-color #f7f7f7
+    tr:nth-child(2n + 1)
+      background-color #eff2ff
+input[type="text"], input[type="password"], input[type="search"]
+  background-color #fff
+  border 1px solid #cccccc
+  height 20px
+  box-shadow inset 0 1px 1px rgba(0, 0, 0, 0.075)
+  border-radius 3px
+  text-indent 3px
+  -webkit-transition border linear 0.2s, box-shadow linear 0.2s
+  -moz-transition border linear 0.2s, box-shadow linear 0.2s
+  -o-transition border linear 0.2s, box-shadow linear 0.2s
+  transition border linear 0.2s, box-shadow linear 0.2s
+  &:focus
+    border-color rgba(160, 10, 10, 0.8)
+    outline 0
+    box-shadow inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(160, 10, 10, 0.6)

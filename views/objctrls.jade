@@ -1,0 +1,35 @@
+- fileImporter.importCss('/stylesheets/objctrls.styl');
+- fileImporter.importJs(['/javascripts/base/filter.coffee', '/swfupload/swfupload.js', '/swfupload/swfupload.queue.js', '/javascripts/objctrls.coffee']);
+.objCtrlsContainer
+  .btns
+    .btn.uploadBtn
+      a.jtBtn(href='javascript:;') 上传
+      .uploadSwfContainer
+        span#uploadBtn
+    .btn.createFolder
+      a.jtBtn(href='javascript:;') 创建文件夹
+    .btn.refresh
+      a.jtBtn(href='javascript:;') 刷新
+    .searchContainer
+      input.keyword(type='text', placeholder='请输入文件名前缀')
+      span.search .
+      .advancedSearch
+        .pathSelect.selectContainer
+          h3 目录选择：
+          input(type='radio', name='path', data-value='/', checked) 
+          span.tip 当前目录
+          input(type='radio', name='path', data-value='') 
+          span.tip(style='margin-right:0;') 包括子目录
+        .typeSelect.selectContainer
+          h3 关键字类型选择：
+          input(type='radio', name='keyword', checked, data-value='prefix', data-placeholder='test(查找test.txt)') 
+          span.tip 文件名前缀
+          input(type='radio', name='keyword', data-value='keyword', data-placeholder='st.txt(查找test.txt)') 
+          span.tip 文件名
+          input(type='radio', name='keyword', data-value='modified', data-placeholder='>2012-10-12') 
+          span.tip 修改时间
+          input(type='radio', name='keyword', data-value='size', data-placeholder='>100k') 
+          span.tip 文件大小
+          //- input(type='radio', name='keyword', data-value='header') 
+          //- span.tip 响应头属性
+  span.paths.normalFont 当前位置：

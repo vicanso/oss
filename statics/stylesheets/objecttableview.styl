@@ -1,0 +1,42 @@
+.objectTableView
+  $border = 1px solid #c0c0c0
+  .head
+    border $border
+    border-bottom none
+    border-top none
+    padding-right 17px
+  .content
+    overflow-y scroll
+    border $border
+    border-top none
+  table
+    td, th
+      height 20px
+      line-height @height
+      padding 8px 0
+      border-top $border
+      text-align center
+      &.check
+        width 40px
+        cursor pointer
+      &.type, &.size
+        width 60px
+      &.lastModified
+        width 140px
+      &.op
+        width 120px
+        a
+          padding-left 10px
+      &.name
+        padding-left 20px
+        text-align left
+    tbody
+      tr
+        &:hover
+          background-color #004385
+          color #fff
+          a
+            color #fff
+        &.folder
+          .name
+            cursor pointer
