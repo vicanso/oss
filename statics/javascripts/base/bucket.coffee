@@ -70,7 +70,7 @@ OSS.Collection.Bucket = Backbone.Collection.extend {
 }
 
 OSS.View.Bucket = Backbone.View.extend {
-  template : _.template '<div class="bucket <%= className %>">' +
+  template : _.template '<div class="bucket <%= className %>" title="<%= name %>">' +
     '<div class="ops">' + 
       '<a href="javascript:;" class="attr">属性</a>' +
       '<a href="javascript:;" class="delete">删除</a>' + 

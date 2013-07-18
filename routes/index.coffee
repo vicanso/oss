@@ -10,7 +10,7 @@ infoParser = (req, res, next) ->
       sessionParser req, res, cbf
     (cbf) ->
       sess = req.session
-      ossInfo = sess.ossInfo
+      ossInfo = sess?.ossInfo
       if ossInfo?.keyId && ossInfo.keySecret
         ossClient = new JTOss ossInfo.keyId, ossInfo.keySecret
         if sess.userMetas

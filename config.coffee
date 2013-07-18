@@ -2,7 +2,6 @@ setting = require './setting'
 jtRedis = require 'jtredis'
 path = require 'path'
 jtRedis.configure
-  query : true
   redis : setting.redis
 
 jtMongodb = require 'jtmongodb'

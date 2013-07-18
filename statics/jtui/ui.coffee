@@ -254,7 +254,6 @@ JT.View.Select = Backbone.View.extend {
       list : listHtmlArr.join ''
     html = @template @templateData
     @$el.html html
-    @$el.find('.userInput').width @$el.find('.jtSelect').width() - 25
     @
 }
 

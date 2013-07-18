@@ -2,3 +2,19 @@
   $opContainerHeight = 113px
   .title
     text-align center
+    position relative
+    z-index 9
+  .bucketListUp, .bucketListDown
+    height 10px
+    width 100%
+    display block
+    position absolute
+    left 0
+    z-index 9
+    padding 7px 0 3px 0
+    display none
+    .jtArrowUp, .jtArrowDown
+      margin-left 25px
+  &:hover
+    .bucketListUp.active, .bucketListDown.active
+      display block

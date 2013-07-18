@@ -3,13 +3,56 @@ jQuery ($) ->
     events : 
       'click .opContainer .createBucket' : 'createBucket'
       'click .opContainer .setting' : 'setting'
+      'click .bucketListDown' : 'bucketListDown'
+      'click .bucketListUp' : 'bucketListUp'
+    bucketListUp : ->
+      @setBucketListOffset 'up'
+      # if @scrollHeight > @bucketsContainerHeight
+      #   firstBucket = @$el.find '.bucketsContainer .bucket:first'
+      #   firstBucket.css 'margin-top', 0
+      #   @$el.find('.bucketListDown').addClass 'active'
+      #   @$el.find('.bucketListUp').removeClass 'active'
+    bucketListDown : ->
+      @setBucketListOffset 'down'
+      # firstBucket = @$el.find '.bucketsContainer .bucket:first'
+      # currentMarginTop = window.parseInt firstBucket.css 'margin-top'
+      # minMarginTop = @bucketsContainerHeight - @scrollHeight
+      # marginTop = Math.max minMarginTop, currentMarginTop - @bucketsContainerHeight
+      # firstBucket.css 'margin-top', marginTop
+      # @$el.find('.bucketListDown').removeClass 'active'
+      # @$el.find('.bucketListUp').addClass 'active'
+    setBucketListOffset : (type)->
+      firstBucket = @$el.find '.bucketsContainer .bucket:first'
+      currentMarginTop = window.parseInt firstBucket.css 'margin-top'
+      minMarginTop = @bucketsContainerHeight - @scrollHeight
+      if type == 'down'
+        marginTop = Math.max minMarginTop, currentMarginTop - @bucketsContainerHeight
+      else
+        marginTop = Math.min 0, currentMarginTop + @bucketsContainerHeight
+      firstBucket.css 'margin-top', marginTop
+      if type == 'down'
+        if marginTop == minMarginTop
+          @$el.find('.bucketListDown').removeClass 'active'
+        @$el.find('.bucketListUp').addClass 'active'
+      else
+        @$el.find('.bucketListDown').addClass 'active'
+        if !marginTop
+          @$el.find('.bucketListUp').removeClass 'active'
     ###*
      * resize 浏览器窗口大小变化时调整
      * @return {[type]} [description]
     ###
     resize : ->
       height = $(window).height()
-      @$el.find('.bucketsContainer').height height - @resizeOffsetHeight
+      @bucketsContainerHeight = height - @resizeOffsetHeight
+      bucketsContainer = @$el.find '.bucketsContainer'
+      bucketsContainer.height @bucketsContainerHeight
+      @scrollHeight = bucketsContainer.prop 'scrollHeight'
+
+      if @scrollHeight > @bucketsContainerHeight
+        @$el.find('.bucketListDown').addClass('active').css 'top', @bucketsContainerHeight
+      else
+        @$el.find('.bucketListDown, .bucketListUp').removeClass 'active'
       @
     createBucket : ->
       createBucketDlg = new JT.View.Alert {
@@ -56,9 +99,10 @@ jQuery ($) ->
             @setBucketActive bucket
         @bucketList = bucketList
       bucketList.fetch {
-        success : (collection, res, options) ->
+        success : (collection, res, options) =>
           # collection.reset res
           collection.at(0).set 'active', true
+          @resize()
       }
       @bucketList = bucketList
       @
