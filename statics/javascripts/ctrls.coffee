@@ -45,7 +45,7 @@ jQuery ($) ->
       MimeSetting.openDlg $('<div class="mimeSetting" />').appendTo('body'), resHeaders, (err, result) =>
         if !result
           return
-        objs = @getCheckObjs true
+        objs = @getCheckObjs()
         if objs.length
           $.ajax({
             url : "/headobjects/#{window.OSS_FILTER.get('bucket')}"
@@ -57,15 +57,16 @@ jQuery ($) ->
             window.OSS_FILTER.trigger 'refresh', window.OSS_FILTER
           ).fail (res) ->
             console.dir 'headobjects fail!'
-    getCheckObjs : (filterFolder) ->
+    getCheckObjs : ->
       path = window.OSS_FILTER.get 'path'
       bucket = window.OSS_FILTER.get 'bucket'
       objs = _.compact window.OBJ_COLLECTION.map (objModel) ->
         if objModel.get '_check'
-          if !filterFolder
-            path + objModel.get 'name'
-          else if objModel.get('_type') != 'folder'
-            path + objModel.get 'name'
+          path + objModel.get 'name'
+          # if !filterFolder
+          #   path + objModel.get 'name'
+          # else if objModel.get('_type') != 'folder'
+          #   path + objModel.get 'name'
         else
           ''
       objs

@@ -1,27 +1,48 @@
 setting = require './setting'
-jtRedis = require 'jtredis'
 path = require 'path'
-jtRedis.configure
-  redis : setting.redis
-
-jtMongodb = require 'jtmongodb'
-jtMongodb.set {
-  queryTime : true
-  valiate : true
-  timeOut : 0
-  mongodb : setting.mongodb
-}
+# process.env.NODE_ENV = 'nodewebkit'
 isProductionMode = process.env.NODE_ENV == 'production'
+isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
 
 host = 'localhost'
 staticMaxAge = 1
+convertExts = null
 if isProductionMode
   staticMaxAge = 48 * 3600 * 1000
   staticVersion = fs.readFileSync path.join __dirname, '/version'
   staticHosts = ['http://soss.vicanso.com']
   host = ['oss.vicanso.com', 'soss.vicanso.com']
-
+  convertExts = 
+    src : ['.coffee', '.styl']
+    dst : ['.js', '.css']
 sessionParser = null
+
+
+if isNodeWebKitMode
+  convertExts = 
+    src : ['.coffee', '.styl']
+    dst : ['.js', '.css']
+  userSession = {}
+  sessionParser = (req, res, cbf) ->
+    req.userSession = userSession
+    cbf null
+else
+  mongodb = setting.mongodb
+  dbName = mongodb.dbName
+  uri = mongodb.uri
+  options =
+    db : 
+      native_parser : false
+    server :
+      poolSize : 5
+  jtMongoose = require 'jtmongoose'
+  jtMongoose.init dbName, uri, options
+
+  jtMongoose.model dbName, 'user', {
+    hash : String
+    globalSetting : [{}]
+    headerSetting : [{}]
+  }
 
 config = 
   getAppPath : ->
@@ -43,12 +64,17 @@ config =
     maxAge : staticMaxAge
     version : staticVersion
     hosts : staticHosts
+    convertExts : convertExts
     mergeList : [
       ['/common/javascripts/utils/underscore.min.js', '/common/javascripts/utils/async.min.js']
     ]
   route : ->
     require './routes'
-  session : ->
+if !isNodeWebKitMode
+  jtRedis = require 'jtredis'
+  jtRedis.configure
+    redis : setting.redis
+  config.session = ->
     key : 'vicanso_oss'
     secret : 'jenny&tree'
     ttl : 120 * 60

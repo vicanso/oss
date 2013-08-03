@@ -83,7 +83,7 @@ routeInfos = [
     handler : pageContentHandler.deleteObject
   }
   {
-    route : '/createbucket/:bucket'
+    route : ['/createbucket/:bucket', '/createbucket/:bucket/:competence']
     middleware : [infoParser]
     handler : pageContentHandler.createBucket
   }

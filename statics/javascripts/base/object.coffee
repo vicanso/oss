@@ -105,8 +105,9 @@ OSS.Model.Obj = Backbone.Model.extend {
   isNew : ->
     false
   set : (attributes, options) ->
-    if !(attributes == '_check' && @get('_type') == 'folder')
-      Backbone.Model.prototype.set.apply @, arguments
+    if attributes == '_check' && @get('name') == '../'
+      return
+    Backbone.Model.prototype.set.apply @, arguments
   url : ->
     path = @get('path') || ''
     "/deleteobject/#{@get('bucket')}?obj=#{path}#{@get('name')}"

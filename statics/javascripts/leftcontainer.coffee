@@ -52,28 +52,58 @@ jQuery ($) ->
       if @scrollHeight > @bucketsContainerHeight
         @$el.find('.bucketListDown').addClass('active').css 'top', @bucketsContainerHeight
       else
+        @$el.find('.bucketsContainer .bucket:first').css 'margin-top', 0
         @$el.find('.bucketListDown, .bucketListUp').removeClass 'active'
       @
     createBucket : ->
+      competenceCollection = new JT.Collection.Select [
+        {
+          key : 'public-read-write'
+          name : '公共读写'
+        }
+        {
+          key : 'public-read'
+          name : '公共读'
+        }
+        {
+          key : 'private'
+          name : '私有读写'
+        }
+      ]
+      competenceView = new JT.View.Select {
+        el : $('<div style="float:right;" />')
+        tips : 'Bucket权限'
+        model : competenceCollection
+      }
       createBucketDlg = new JT.View.Alert {
         model : new JT.Model.Dialog {
           title : '创建bucket'
-          content : '<p>请输入bucket的名字：<input type="text" class="bucket" /></p>'
+          content : "<p>请输入bucket的名字：<input type='text' class='bucket' /></p>
+            <div class='competence' style='margin-top:10px;width:290px;line-height:30px;'>请选择bucket的权限：</div>
+            "
           modal : true
           btns : 
             '确定' : ($el) =>
               bucket = $el.find('.bucket').val()
-              $.ajax({
-                url : "/createbucket/#{bucket}"
-              }).done( (res) =>
-                @bucketList.add {
-                  name : bucket
-                }
-              )
+              if bucket
+                url = "/createbucket/#{bucket}"
+                selectValue = competenceCollection.val()[0]
+                if selectValue
+                  url += "/#{selectValue}"
+                $.ajax({
+                  url : url
+                }).done( (res) =>
+                  @bucketList.add {
+                    name : bucket
+                  }
+                )
+              else
+                createBucketDlg.$el.find('.bucket').focus()
+                false
             '取消' : ->
-
         }
       }
+      competenceView.$el.prependTo createBucketDlg.$el.find('.competence') 
       createBucketDlg.$el.find('.bucket').focus().on 'keyup', (e) ->
         if e.keyCode == 0x0d
           createBucketDlg.$el.find('.btns .btn:first').click()
@@ -97,6 +127,10 @@ jQuery ($) ->
         @listenTo bucketList, 'change:active', (bucket, active) =>
           if active
             @setBucketActive bucket
+        @listenTo bucketList, 'add remove', =>
+          _.delay =>
+            @resize()
+          , 100
         @bucketList = bucketList
       bucketList.fetch {
         success : (collection, res, options) =>

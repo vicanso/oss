@@ -64,7 +64,7 @@ jQuery ($) ->
               _type : 'folder'
             }
           window.OBJ_COLLECTION.reset _.compact items
-          setMarkers res.next
+          setMarkers res.marker
       error : ->
         window.OBJ_COLLECTION.reset []
         console.dir 'oss path fetch fail!'

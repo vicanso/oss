@@ -130,7 +130,7 @@ jQuery ($) ->
 initSwfupload = (options) ->
   setting = {
     flash_url : '/static/swfupload/swfupload.swf'
-    upload_url : '/oss/upload'
+    upload_url : '/upload'
     custom_settings : 
       progressTarget : "fsUploadProgress"
       cancelButtonId : "btnCancel"
@@ -141,7 +141,7 @@ initSwfupload = (options) ->
     file_size_limit : "100 MB"
     file_types : "*.*"
     file_types_description : "All Files"
-    file_upload_limit : 1000
+    file_upload_limit : 2000
     file_queue_limit : 0
     debug : false
   }

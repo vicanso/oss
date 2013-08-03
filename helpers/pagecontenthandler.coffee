@@ -3,7 +3,10 @@ async = require 'async'
 fs = require 'fs'
 crypto = require 'crypto'
 JTOss = require 'jtoss'
-ossDBClient = require('jtmongodb').getClient 'oss'
+isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
+if !isNodeWebKitMode
+  jtMongoose = require 'jtmongoose'
+  User = jtMongoose.model 'oss', 'user'
 wrapperCbf = (cbf) ->
   _.wrap cbf, (func, err, data) ->
     func err, data, {
@@ -26,7 +29,7 @@ pageContentHandler =
   buckets : (req, res, cbf) ->
     cbf = wrapperCbf cbf
     ossClient = req.ossClient
-    ossClient.listBuckets (err, buckets) ->
+    ossClient.getService (err, buckets) ->
       if err
         cbf err
       else
@@ -38,10 +41,11 @@ pageContentHandler =
     obj = req.param 'obj'
     if req.method == 'POST'
       headers = _.pick req.body, 'Content-Language Expires Cache-Control Content-Encoding Content-Disposition'.split ' '
-      ossClient.updateObjectHeader bucket, obj, headers, cbf
+      ossClient.headObject bucket, obj, headers, cbf
     else
       ossClient.headObject bucket, obj, (err, res) ->
         if err
+          console.dir err
           cbf err
         else
           cbf null, res
@@ -52,7 +56,7 @@ pageContentHandler =
     headers = req.body.headers || {}
     objs = req.body.objs
     async.eachLimit objs, 10, (obj, cbf) ->
-      ossClient.updateObjectHeader bucket, obj, headers, cbf
+      ossClient.headObject bucket, obj, headers, cbf
     , cbf
   objects : (req, res, cbf) ->
     cbf = wrapperCbf cbf
@@ -72,18 +76,19 @@ pageContentHandler =
         maxKeys = eachPageSize.value
     if !searchType || searchType == 'prefix'
       prefix = prefix || keyword
-      ossClient.listObjects bucket, {prefix : prefix, delimiter : delimiter, marker : marker, 'max-keys' : maxKeys}, cbf
+      ossClient.listBucket bucket, {prefix : prefix, delimiter : delimiter, marker : marker, 'max-keys' : maxKeys}, cbf
     else
       prefix = ''
-      query =
+      filter = getFilter searchType, keyword
+      params =
         prefix : prefix
-        keyword : keyword
-        searchType : searchType
+        filter : filter
         marker : marker
         'max-keys' : maxKeys
         max : maxKeys
         delimiter : delimiter
-      ossClient.listObjectsByCustom bucket, query, cbf
+
+      ossClient.listObjectsByFilter bucket, params, cbf
   deleteObject : (req, res, cbf) ->
     cbf = wrapperCbf cbf
     ossClient = req.ossClient
@@ -97,10 +102,10 @@ pageContentHandler =
     data = req.body
     objs = data.objs
     if bucket && objs?.length
-      _.each objs, (obj) ->
-        len = obj.length
-        if obj.charAt(len - 1) == '/'
-          obj = obj.substring 0, len - 1
+      # _.each objs, (obj) ->
+      #   len = obj.length
+      #   if obj.charAt(len - 1) == '/'
+      #     obj = obj.substring 0, len - 1
     #   xmlArr = ['<?xml version="1.0" encoding="UTF-8"?><Delete><Quiet>true</Quiet>']
     #   _.each objs, (obj) ->
     #     len = obj.length
@@ -115,8 +120,9 @@ pageContentHandler =
     cbf = wrapperCbf cbf
     ossClient = req.ossClient
     bucket = req.param 'bucket'
+    competence = req.param 'competence'
     if bucket
-      ossClient.createBucket bucket, cbf
+      ossClient.createBucket bucket, competence, cbf
     else
       err = new Error 'the bucket can not null!'
       err.msg = 'bucket的名字不能为空！'
@@ -127,8 +133,8 @@ pageContentHandler =
     data = req.body
     filePath = req.files.Filedata.path
     console.dir filePath
-    console.dir data
-    ossClient.putObject data.bucket, "#{data.path || ''}#{data.Filename}", filePath, (err, data) ->
+    console.dir data 
+    ossClient.putObjectFromFile data.bucket, "#{data.path || ''}#{data.Filename}", filePath, (err, data) ->
       fs.unlink filePath
       cbf err, data
   login : (req, res, cbf) ->
@@ -139,15 +145,25 @@ pageContentHandler =
     async.waterfall [
       (cbf) ->
         ossClient = new JTOss ossInfo.keyId, ossInfo.keySecret
-        ossClient.listBuckets cbf
+        ossClient.getService cbf
       (buckets, cbf) ->
-        ossDBClient.findOne 'user', {hash : ossInfo.userHash}, cbf
+        if User
+          User.findOne 'user', {hash : ossInfo.userHash}, cbf
+        else
+          # TODO
+          cbf null
       (data, cbf) ->
         if data
           # _.extend ossInfo, data
           cbf null, data
         else
-          ossDBClient.save 'user', {hash : ossInfo.userHash}, cbf
+          if User
+            new User({
+              hash : ossInfo.userHash
+            }).save cbf
+          else
+            # TODO
+            cbf null
     ], (err, data) ->
       if err
         cbf err
@@ -164,23 +180,34 @@ pageContentHandler =
     type = req.param('type') || 'global'
     if req.method == 'GET'
       if type == 'global'
-        setting = sess.globalSetting || [
+        defaults = [
           {
             key : 'eachPageSize'
             desc : '每页显示数量(1-1000)'
             value : 100
           }
         ]
+        setting = sess.globalSetting
+        if !setting || !setting.length
+          setting = defaults
       else
         setting = sess.headerSetting || []
+      console.dir type
+      console.dir setting
       cbf null, setting
     else
       if type == 'global'
         sess.globalSetting = req.body.setting
-        ossDBClient.update 'user', {hash : sess.ossInfo.userHash}, {'$set' : {globalSetting : req.body.setting}},  ->
+        if User
+          User.findOneAndUpdate {hash : sess.ossInfo.userHash}, {'$set' : {globalSetting : req.body.setting}},  ->
+        else
+          # TODO
       else
         sess.headerSetting = req.body.setting
-        ossDBClient.update 'user', {hash : sess.ossInfo.userHash}, {'$set' : {headerSetting : req.body.setting}},  ->
+        if User
+          User.findOneAndUpdate {hash : sess.ossInfo.userHash}, {'$set' : {headerSetting : req.body.setting}},  ->
+        else
+          # TODO
         sess.userMetas = converUserMetas req.body.setting
       cbf null
   createFolder : (req, res, cbf) ->
@@ -207,4 +234,44 @@ converUserMetas = (headerSetting) ->
       cfg = userMetas[type] ?= {}
       cfg[setting.header] = setting.value
   userMetas
+
+getFilter = (searchType, keyword) ->
+  if !searchType || !keyword
+    return null
+  if searchType == 'keyword'
+    (objInfo) ->
+      ~objInfo.name.indexOf keyword
+  else
+    le = true
+    if keyword[0] == '>'
+      le = false
+      keyword = keyword.substring 1
+    else if keyword[0] == '<'
+      keyword = keyword.substring 1
+
+    if searchType == 'modified'
+      modified = new Date keyword
+      (objInfo) ->
+        lastModified = new Date objInfo.lastModified
+        if le
+          lastModified < modified
+        else
+          lastModified >= modified
+    else if searchType == 'size'
+      lastChar = keyword[keyword.length - 1]
+      size = GLOBAL.parseFloat keyword
+      if lastChar == 'K' || lastChar == 'k'
+        size *= KB_SIZE
+      else if lastChar == 'M' || lastChar == 'm'
+        size *= MB_SIZE
+      else if lastChar == 'G' || lastChar == 'g'
+        size *= GB_SIZE
+      (objInfo) ->
+        if le
+          objInfo.size < size
+        else
+          objInfo.size >= size
+    else
+      null
+
 module.exports = pageContentHandler
