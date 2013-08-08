@@ -17,7 +17,7 @@ $leftContainerWidth = 60px
 #objectTableContainer
   height 100%
   position relative
-  .title
+  > .title
     height 30px
     line-height @height
 .objAttrDialog
@@ -70,10 +70,10 @@ $leftContainerWidth = 60px
   background rgba(255, 255, 255, 0.8) url(../images/loading.gif) no-repeat center
 
 #msgListContainer
-  position fixed
+  position absolute
   right 0
-  top 0
-  width 100px
+  bottom 0
+  width 100%
   z-index 10
 
 #loginDialog

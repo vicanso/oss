@@ -78,6 +78,13 @@ jQuery ($) ->
         uploadSwfContainer.css('visibility', 'visible').siblings('.jtBtn').removeClass 'disabled'
       else
         uploadSwfContainer.css('visibility', 'hidden').siblings('.jtBtn').addClass 'disabled'
+    putFiles : (files) ->
+      $.ajax {
+        type : 'post'
+        url : '/putfiles'
+        data : 
+          files : files
+      }
     initialize : ->
       self = @
       window.OSS_FILTER.on 'change:keyword', (model) =>
@@ -85,41 +92,49 @@ jQuery ($) ->
         keywordObj = @$el.find '.searchContainer .keyword' 
         if keyword != keywordObj.val()
           keywordObj.val keyword
-      @swfUpload = initSwfupload {
-        file_queued_handler : (info) ->
-          window.MSG_LIST.add {
-            id : info.id
-            name : info.name
-            desc : "上传文件:#{info.name}"
-          }
-        # file_queue_error_handler : fileQueueError
-        file_dialog_complete_handler : (numFilesSelected) ->
-          if numFilesSelected
-            self.swfUpload.setPostParams {
-              bucket : window.OSS_FILTER.get 'bucket'
-              path : window.OSS_FILTER.get 'path'
+      if window.APP_MODE == 'node-webkit'
+        @$el.find('.btns .uploadBtn .uploadSwfContainer').html('<input type="file" multiple />').hide()
+        fileChooseBtn = @$el.find '.btns .uploadBtn .uploadSwfContainer input'
+        fileChooseBtn.on 'change', ->
+          self.putFiles this.value
+        @$el.find('.btns .uploadBtn .jtBtn').click =>
+          fileChooseBtn.click()
+      else
+        @swfUpload = initSwfupload {
+          file_queued_handler : (info) ->
+            window.MSG_LIST.add {
+              id : info.id
+              name : info.name
+              desc : "上传文件:#{info.name}"
             }
-            this.startUpload()
-            self.setUploadStatus false
-        upload_start_handler : (info) ->
-          id = info.id
-          doingModel = window.MSG_LIST.find (model) ->
-            id == model.get 'id'
-          if doingModel
-            doingModel.set 'status', 'doing'
-        # upload_progress_handler : uploadProgress
-        # upload_error_handler : uploadError
-        # upload_success_handler : uploadSuccess
-        upload_complete_handler : (info) ->
-          id = info.id
-          completeModel = window.MSG_LIST.find (model) ->
-            id == model.get 'id'
-          if completeModel
-            window.MSG_LIST.remove completeModel
-        queue_complete_handler : ->
-          self.setUploadStatus true
-          console.dir 'all complete'
-      }
+          # file_queue_error_handler : fileQueueError
+          file_dialog_complete_handler : (numFilesSelected) ->
+            if numFilesSelected
+              self.swfUpload.setPostParams {
+                bucket : window.OSS_FILTER.get 'bucket'
+                path : window.OSS_FILTER.get 'path'
+              }
+              this.startUpload()
+              self.setUploadStatus false
+          upload_start_handler : (info) ->
+            id = info.id
+            doingModel = window.MSG_LIST.find (model) ->
+              id == model.get 'id'
+            if doingModel
+              doingModel.set 'status', 'doing'
+          # upload_progress_handler : uploadProgress
+          # upload_error_handler : uploadError
+          # upload_success_handler : uploadSuccess
+          upload_complete_handler : (info) ->
+            id = info.id
+            completeModel = window.MSG_LIST.find (model) ->
+              id == model.get 'id'
+            if completeModel
+              window.MSG_LIST.remove completeModel
+          queue_complete_handler : ->
+            self.setUploadStatus true
+            console.dir 'all complete'
+        }
 
       @initSearchEvent()
   }

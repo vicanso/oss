@@ -13,7 +13,7 @@ MsgListView = Backbone.View.extend {
   events :
     'click .title .minimize' : 'clickMinimize'
     'click .title .maximize' : 'clickMaximize'
-  template : _.template '<li class="item <%= status %>" title="<%= desc %>"><%= name %></li>'
+  template : _.template '<li class="item <%= status %>" title="<%= desc %>"><div class="progress"><div class="progressBar"></div></div><%= name %></li>'
   clickMinimize : ->
     @minimize()
     @
@@ -22,6 +22,8 @@ MsgListView = Backbone.View.extend {
     $el.find('.title .maximize').show()
     $el.find('.title .minimize').hide()
     $el.find('.items').hide()
+    @model.status = 'minimize'
+    $(window).trigger 'resize'
     @
   clickMaximize : ->
     @maximize()
@@ -31,6 +33,8 @@ MsgListView = Backbone.View.extend {
     $el.find('.title .maximize').hide()
     $el.find('.title .minimize').show()
     $el.find('.items').show()
+    @model.status = 'maximize'
+    $(window).trigger 'resize'
     @
   setTotal : ->
     # if @minimize
@@ -49,7 +53,10 @@ MsgListView = Backbone.View.extend {
     @$el.find('.items .item').eq(index).remove()
   initialize : ->
     $el = @$el
-    $el.addClass('msgList').html "<h4 class='title jtGrayGradient'><a href='javascript:;' class='minimize' title='最小化'>_</a><a href='javascript:;' class='maximize' title='最大化'></a>消息列表<span class='total'></span></h4><ul class='items'></ul>"
+    msgListClass = 'msgList'
+    if $(window).width() > 600
+      msgListClass += ' largeMsgListContainer'
+    $el.addClass(msgListClass).html "<h4 class='title'><a href='javascript:;' class='minimize' title='最小化'>_</a><a href='javascript:;' class='maximize' title='最大化'></a>消息列表<span class='total'></span></h4><ul class='items'></ul>"
     @setList()
     @setTotal()
     if !@model.length

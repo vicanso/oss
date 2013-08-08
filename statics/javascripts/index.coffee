@@ -1,11 +1,15 @@
+if window.location.search == '?type=node-webkit'
+  window.APP_MODE = 'node-webkit'
 jQuery ($) ->
   _ = window._
+  keyId = $.cookie 'keyId'
+  keySecret = $.cookie 'keySecret'
   loginDlg = new JT.View.Dialog {
     el : $ '#loginDialog'
     model : new JT.Model.Dialog {
       title : '登录OSS'
-      content : "<div class='inputItem'><span class='name'>Key ID:</span><input class='keyId' type='text' value='Z8pQTAkCNNDAOPjt' /></div>
-      <div class='inputItem'><span class='name'>Key Secret:</span><input class='keySecret' type='text' value='z014NFAjKNLpvP07TSACKjNDgQDsqS'/></div>
+      content : "<div class='inputItem'><span class='name'>Key ID:</span><input class='keyId' type='text' placeholder='请输入OSS kEY ID' value='#{keyId}' /></div>
+      <div class='inputItem'><span class='name'>Key Secret:</span><input class='keySecret' type='text' placeholder='请输入OSS kEY SECRET' value='#{keySecret}'/></div>
       "
       modal : true
       destroyOnClose : false
@@ -14,6 +18,8 @@ jQuery ($) ->
           keyId = dlg.find('.keyId').val()
           keySecret = dlg.find('.keySecret').val()
           if keyId && keySecret
+            $.cookie 'keyId', keyId
+            $.cookie 'keySecret', keySecret
             $.ajax({
               url : '/login'
               type : 'post'
@@ -32,11 +38,51 @@ jQuery ($) ->
 
   do ->
     msgList = new MsgCollection
-    new MsgListView {
+    tmp = new MsgListView {
       model : msgList
       el : $ '#msgListContainer'
     }
     window.MSG_LIST = msgList
+    # msgList.add [
+    #   {
+    #     id : '111'
+    #     name : '测试1'
+    #     status : 'doing'
+    #     desc : '上传文件....'
+    #   }
+    #   {
+    #     id : '112'
+    #     name : '测试2'
+    #     status : 'doing'
+    #     desc : '上传文件....'
+    #   }
+    #   {
+    #     id : '113'
+    #     name : '测试3'
+    #     desc : '上传文件....'
+    #   }
+    #   {
+    #     id : '114'
+    #     name : '测试4'
+    #     desc : '上传文件....'
+    #   }
+    #   {
+    #     id : '115'
+    #     name : '测试5'
+    #     desc : '上传文件....'
+    #   }
+    #   {
+    #     id : '116'
+    #     name : '测试6'
+    #     desc : '上传文件....'
+    #   }
+    #   {
+    #     id : '117'
+    #     name : '测试7'
+    #     desc : '上传文件....'
+    #   }
+    # ]
+    # tmp.maximize()
     $(document).ajaxError (e, res) ->
       if res.status == 401
         loginDlg.open()
@@ -50,16 +96,10 @@ do ->
     options.retry = ->
       func options
     func options
-  # $.ajax = (options) ->
-  #   options.retry = ->
-  #     ajax options
-  #   ajax options
 
   $('#loadingMask').on 'click', '.bgExec', ->
     $('#loadingMask').hide()
   $(document).ajaxStart( ->
-    # if setting.dataType != 'script'
-    #   setting.url = urlPrefix + setting.url
     $('#loadingMask').show()
   ).ajaxComplete (e, res, options) ->
     if res.status == 500
@@ -76,7 +116,9 @@ do ->
 
         }
       }
-    $('#loadingMask').hide()
+    _.defer ->
+      $('#loadingMask').hide()
   _.delay ->
     $(window).trigger 'resize'
   , 100
+

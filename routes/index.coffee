@@ -95,6 +95,12 @@ routeInfos = [
   }
   {
     type : 'post'
+    route : '/putfiles'
+    middleware : [infoParser]
+    handler : pageContentHandler.putFiles
+  }
+  {
+    type : 'post'
     route : '/login'
     middleware : [sessionParser]
     handler : pageContentHandler.login

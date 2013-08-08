@@ -17,7 +17,12 @@ jQuery ($) ->
   }
   resize = ->
     height = $(window).height()
-    $('#objectTableContainer .objectTableView .content').height height - 150
+    offset = 150
+    if window.MSG_LIST.status == 'maximize'
+      offset += 90
+    else
+      offset += 20
+    $('#objectTableContainer .objectTableView .content').height height - offset
   $(window).on 'resize', _.debounce resize, 200
   # resize()
   window.OBJ_COLLECTION = objCollection

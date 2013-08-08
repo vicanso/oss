@@ -137,6 +137,8 @@ pageContentHandler =
     ossClient.putObjectFromFile data.bucket, "#{data.path || ''}#{data.Filename}", filePath, (err, data) ->
       fs.unlink filePath
       cbf err, data
+  putFiles : (req, res, cbf) ->
+    console.dir req.body
   login : (req, res, cbf) ->
     cbf = wrapperCbf cbf
     sess = req.session
