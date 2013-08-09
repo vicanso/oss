@@ -1,5 +1,6 @@
 setting = require './setting'
 path = require 'path'
+fs = require 'fs'
 # process.env.NODE_ENV = 'nodewebkit'
 isProductionMode = process.env.NODE_ENV == 'production'
 isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
