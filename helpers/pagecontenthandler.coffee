@@ -7,6 +7,9 @@ isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
 if !isNodeWebKitMode
   jtMongoose = require 'jtmongoose'
   User = jtMongoose.model 'oss', 'user'
+else
+  localDb = require './localdb'
+
 wrapperCbf = (cbf) ->
   _.wrap cbf, (func, err, data) ->
     func err, data, {
@@ -102,17 +105,6 @@ pageContentHandler =
     data = req.body
     objs = data.objs
     if bucket && objs?.length
-      # _.each objs, (obj) ->
-      #   len = obj.length
-      #   if obj.charAt(len - 1) == '/'
-      #     obj = obj.substring 0, len - 1
-    #   xmlArr = ['<?xml version="1.0" encoding="UTF-8"?><Delete><Quiet>true</Quiet>']
-    #   _.each objs, (obj) ->
-    #     len = obj.length
-    #     if obj.charAt(len - 1) == '/'
-    #       obj = obj.substring 0, len - 1
-    #     xmlArr.push "<Object><Key>#{obj}</Key></Object>"
-    #   xmlArr.push '</Delete>'
       ossClient.deleteObjects bucket, objs, cbf
     else
       cbf null
@@ -138,7 +130,21 @@ pageContentHandler =
       fs.unlink filePath
       cbf err, data
   putFiles : (req, res, cbf) ->
-    console.dir req.body
+    cbf = wrapperCbf cbf
+    ossClient = req.ossClient
+    bucket = req.param 'bucket'
+    targetPath = req.param 'path'
+    files = req.param('files').split ';'
+    # console.dir files
+    files = _.map files, (file) ->
+      targetPath + file
+    if VICANSO?.putFilesProgress
+      progress = VICANSO.putFilesProgress
+    else
+      progress = ->
+    params =
+      progress : progress
+    ossClient.putObjectFromFileList bucket, files, null, params, cbf
   login : (req, res, cbf) ->
     cbf = wrapperCbf cbf
     sess = req.session
@@ -153,7 +159,7 @@ pageContentHandler =
           User.findOne 'user', {hash : ossInfo.userHash}, cbf
         else
           # TODO
-          cbf null
+          cbf null, localDb.findOne ossInfo.userHash
       (data, cbf) ->
         if data
           # _.extend ossInfo, data
@@ -164,8 +170,8 @@ pageContentHandler =
               hash : ossInfo.userHash
             }).save cbf
           else
-            # TODO
-            cbf null
+            localDb.save ossInfo.userHash, {}
+            cbf null, null
     ], (err, data) ->
       if err
         cbf err
@@ -194,8 +200,6 @@ pageContentHandler =
           setting = defaults
       else
         setting = sess.headerSetting || []
-      console.dir type
-      console.dir setting
       cbf null, setting
     else
       if type == 'global'
@@ -203,13 +207,13 @@ pageContentHandler =
         if User
           User.findOneAndUpdate {hash : sess.ossInfo.userHash}, {'$set' : {globalSetting : req.body.setting}},  ->
         else
-          # TODO
+          localDb.update sess.ossInfo.userHash, {globalSetting : req.body.setting}
       else
         sess.headerSetting = req.body.setting
         if User
           User.findOneAndUpdate {hash : sess.ossInfo.userHash}, {'$set' : {headerSetting : req.body.setting}},  ->
         else
-          # TODO
+          localDb.update sess.ossInfo.userHash, {headerSetting : req.body.setting}
         sess.userMetas = converUserMetas req.body.setting
       cbf null
   createFolder : (req, res, cbf) ->
@@ -217,7 +221,7 @@ pageContentHandler =
     bucket = req.param 'bucket'
     folderPath = req.param('path') + '/'
     ossClient = req.ossClient
-    ossClient.putObject bucket, folderPath, null, cbf
+    ossClient.putObjectWithData bucket, folderPath, null, cbf
   search : (req, res, cbf) ->
     cbf = wrapperCbf cbf
     bucket = req.param 'bucket'

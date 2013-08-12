@@ -3,54 +3,6 @@ OSS.Model ?= {}
 OSS.Collection ?= {}
 OSS.View ?= {}
 
-# OSS.Model.Path = Backbone.Model.extend {
-#   defaults : 
-#     path : ''
-#     bucket : ''
-#     delimiter : '/'
-#   url : ->
-#     url = "/objects/#{@get('bucket')}"
-#     params = []
-#     path = @get 'path'
-#     prefix = @get('keyword') || @get 'prefix'
-#     if path
-#       if prefix
-#         path += prefix
-#       params.push "prefix=#{path}"
-#     else if prefix
-#       params.push "prefix=#{prefix}"
-#     _.each 'delimiter searchType'.split(' '), (type) =>
-#       value = @get type
-#       if value
-#         params.push "#{type}=#{value}"
-#     # keyword = @get 'keyword'
-#     # if keyword
-#     #   params.push "keyword=#{keyword}"
-
-#     markers = @get 'markers'
-#     if markers?.length
-#       params.push "marker=#{_.last(markers)}"
-#     if params.length
-#       url += "?#{params.join('&')}"
-#     url
-#   reset : ->
-#     @set 'prefix', ''
-#     @set 'keyword', ''
-#     @set 'markers', []
-#     @set 'delimiter', '/'
-
-#   nextPage : ->
-#     @trigger 'getdata', @
-#   prevPage : ->
-#     markers = @get 'markers'
-#     markers.pop()
-#     if !@get 'lastPage'
-#       markers.pop()
-#     @set 'markers', markers
-#     @trigger 'getdata', @
-# }
-
-# window.OSS_PATH = new OSS.Model.Path
 
 OSS.Model.Bucket = Backbone.Model.extend {
   defaults : 
@@ -72,7 +24,7 @@ OSS.Collection.Bucket = Backbone.Collection.extend {
 OSS.View.Bucket = Backbone.View.extend {
   template : _.template '<div class="bucket <%= className %>" title="<%= name %>">' +
     '<div class="ops">' + 
-      '<a href="javascript:;" class="attr">属性</a>' +
+      # '<a href="javascript:;" class="attr">属性</a>' +
       '<a href="javascript:;" class="delete">删除</a>' + 
     '</div>' +
     '<div class="arrowLeft"></div>' +

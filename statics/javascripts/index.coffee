@@ -8,18 +8,18 @@ jQuery ($) ->
     el : $ '#loginDialog'
     model : new JT.Model.Dialog {
       title : '登录OSS'
-      content : "<div class='inputItem'><span class='name'>Key ID:</span><input class='keyId' type='text' placeholder='请输入OSS kEY ID' value='#{keyId}' /></div>
-      <div class='inputItem'><span class='name'>Key Secret:</span><input class='keySecret' type='text' placeholder='请输入OSS kEY SECRET' value='#{keySecret}'/></div>
+      content : "<div class='inputItem'><span class='name'>Key ID:</span><input class='keyId' type='text' placeholder='请输入OSS KEY ID' value='#{keyId || ""}' /></div>
+      <div class='inputItem'><span class='name'>Key Secret:</span><input class='keySecret' type='text' placeholder='请输入OSS KEY SECRET' value='#{keySecret || ""}'/></div>
       "
       modal : true
       destroyOnClose : false
       btns : 
         '登录' : (dlg) ->
-          keyId = dlg.find('.keyId').val()
-          keySecret = dlg.find('.keySecret').val()
+          keyId = dlg.find('.keyId').val().trim()
+          keySecret = dlg.find('.keySecret').val().trim()
           if keyId && keySecret
-            $.cookie 'keyId', keyId
-            $.cookie 'keySecret', keySecret
+            $.cookie 'keyId', keyId, {expires : 365}
+            $.cookie 'keySecret', keySecret, {expires : 365}
             $.ajax({
               url : '/login'
               type : 'post'

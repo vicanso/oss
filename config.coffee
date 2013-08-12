@@ -25,7 +25,7 @@ if isNodeWebKitMode
     dst : ['.js', '.css']
   userSession = {}
   sessionParser = (req, res, cbf) ->
-    req.userSession = userSession
+    req.session = userSession
     cbf null
 else
   mongodb = setting.mongodb
@@ -67,7 +67,11 @@ config =
     hosts : staticHosts
     convertExts : convertExts
     mergeList : [
-      ['/common/javascripts/utils/underscore.min.js', '/common/javascripts/utils/async.min.js']
+      ['/javascripts/jquery/jquery-2.0.3.js'
+      '/javascripts/utils/underscore.js'
+      '/javascripts/utils/backbone.js'
+      '/javascripts/utils/async.js'
+      '/javascripts/jquery/jquery.cookie.js']
     ]
   route : ->
     require './routes'

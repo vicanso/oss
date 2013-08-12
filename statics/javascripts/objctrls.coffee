@@ -1,4 +1,6 @@
 jQuery ($) ->
+  window.PUT_FILES_PROGRESS = ->
+    console.dir arguments
   ObjCtrls = Backbone.View.extend {
     events : 
       'click .btns .createFolder' : 'createFolder'
@@ -31,8 +33,9 @@ jQuery ($) ->
     createFolder : ->
       async.waterfall [
         (cbf) ->
+          el = $ '<div class="jtAlertDlg" style="width:600px;margin-left:-300px;" />'
           new JT.View.Alert {
-            el :$('<div class="jtAlertDlg" style="width:600px;margin-left:-300px;" />').appendTo 'body'
+            el : el.appendTo 'body'
             model : new JT.Model.Dialog {
               modal : true
               title : '创建新文件夹'
@@ -59,19 +62,17 @@ jQuery ($) ->
 
             }
           }
+          el.find('.folderName').focus().on 'keyup', (e) ->
+            if e.keyCode == 0x0d
+              el.find('.btns .btn:first').click()
         (folderName, cbf) ->
           if folderName
             path = window.OSS_FILTER.get('path')
             path = path + folderName
             url = "/createfolder/#{window.OSS_FILTER.get('bucket')}?path=#{path}"
-            console.dir url
             $.get(url).done ->
               window.OSS_FILTER.trigger 'refresh', window.OSS_FILTER
       ]
-      # path = window.OSS_PATH.get('path') + '/'
-      # url = "/createfolder/#{window.OSS_PATH.get('bucket')}#{path}"
-      # $.get(url).success ->
-      #   window.OSS_PATH.trigger 'refresh', window.OSS_PATH
     setUploadStatus : (enabled) ->
       uploadSwfContainer = @$el.find '.uploadBtn .uploadSwfContainer'
       if enabled
@@ -79,10 +80,24 @@ jQuery ($) ->
       else
         uploadSwfContainer.css('visibility', 'hidden').siblings('.jtBtn').addClass 'disabled'
     putFiles : (files) ->
+      window.PUT_FILES_PROGRESS = (file, status) ->
+        console.dir arguments
+      _.each files.split(';'), (file) ->
+        fileName = file
+        index = file.indexOf '/'
+        if ~index
+          fileName = file.substring index + 1
+        window.MSG_LIST.add {
+          id : file
+          name : fileName
+          desc : "上传文件:#{file}"
+        }
       $.ajax {
         type : 'post'
         url : '/putfiles'
         data : 
+          bucket : window.OSS_FILTER.get 'bucket'
+          path : window.OSS_FILTER.get 'path'
           files : files
       }
     initialize : ->
