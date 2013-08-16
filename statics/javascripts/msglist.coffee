@@ -45,6 +45,11 @@ MsgListView = Backbone.View.extend {
     if ~index
       itemObj = @$el.find('.items .item').eq index
       itemObj.removeClass(prevValue).addClass value
+  setProgress : (item, value) ->
+    index = @model.indexOf item
+    if ~index
+      itemObj = @$el.find('.items .item').eq index
+      itemObj.find('.progressBar').width "#{value}%"
   setList : ->
     htmlArr = @model.map (item) =>
       @template item.toJSON()
@@ -66,6 +71,8 @@ MsgListView = Backbone.View.extend {
       @setTotal()
     @listenTo @model, 'change:status', (item, value) =>
       @setStatus item, value, item.previous 'status'
+    @listenTo @model, 'change:progress', (item, value) =>
+      @setProgress item, value
     @listenTo @model, 'add', (item) =>
       @setList()
       @setTotal()

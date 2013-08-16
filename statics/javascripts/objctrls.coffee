@@ -1,6 +1,11 @@
 jQuery ($) ->
-  window.PUT_FILES_PROGRESS = ->
-    console.dir arguments
+  window.addEventListener 'message', (e) ->
+    data = e.data
+    console.dir data
+    if data.type == 'putObjectFromFileList'
+      objCtrls.setUploadFileStatus data.file, data.status
+    else if data.type == 'uploadLargeFile'
+      objCtrls.setUploadLargeFile data.file, data.complete, data.total
   ObjCtrls = Backbone.View.extend {
     events : 
       'click .btns .createFolder' : 'createFolder'
@@ -100,6 +105,19 @@ jQuery ($) ->
           path : window.OSS_FILTER.get 'path'
           files : files
       }
+    setUploadFileStatus : (id, status) ->
+     doingModel = window.MSG_LIST.find (model) ->
+        id == model.get 'id'
+      if doingModel
+        if status == 'complete'
+          window.MSG_LIST.remove doingModel
+        else
+          doingModel.set 'status', status
+    setUploadLargeFile : (id, complete, total) ->
+      doingModel = window.MSG_LIST.find (model) ->
+        id == model.get 'id'
+      if doingModel
+        doingModel.set 'progress', Math.floor 100 * complete / total
     initialize : ->
       self = @
       window.OSS_FILTER.on 'change:keyword', (model) =>
@@ -131,21 +149,15 @@ jQuery ($) ->
               }
               this.startUpload()
               self.setUploadStatus false
-          upload_start_handler : (info) ->
+          upload_start_handler : (info) =>
             id = info.id
-            doingModel = window.MSG_LIST.find (model) ->
-              id == model.get 'id'
-            if doingModel
-              doingModel.set 'status', 'doing'
+            @setUploadFileStatus id, 'doing'
           # upload_progress_handler : uploadProgress
           # upload_error_handler : uploadError
           # upload_success_handler : uploadSuccess
           upload_complete_handler : (info) ->
             id = info.id
-            completeModel = window.MSG_LIST.find (model) ->
-              id == model.get 'id'
-            if completeModel
-              window.MSG_LIST.remove completeModel
+            @setUploadFileStatus id, 'complete'
           queue_complete_handler : ->
             self.setUploadStatus true
             console.dir 'all complete'
@@ -153,7 +165,7 @@ jQuery ($) ->
 
       @initSearchEvent()
   }
-  new ObjCtrls {
+  objCtrls = new ObjCtrls {
     el : $ '.objCtrlsContainer'
   }
 
