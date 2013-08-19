@@ -1,4 +1,4 @@
-setting = require './setting'
+setting = require './app_setting'
 path = require 'path'
 fs = require 'fs'
 # process.env.NODE_ENV = 'nodewebkit'

@@ -155,11 +155,11 @@ jQuery ($) ->
           # upload_progress_handler : uploadProgress
           # upload_error_handler : uploadError
           # upload_success_handler : uploadSuccess
-          upload_complete_handler : (info) ->
+          upload_complete_handler : (info) =>
             id = info.id
             @setUploadFileStatus id, 'complete'
-          queue_complete_handler : ->
-            self.setUploadStatus true
+          queue_complete_handler : =>
+            @setUploadStatus true
             console.dir 'all complete'
         }
 
