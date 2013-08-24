@@ -121,6 +121,12 @@ routeInfos = [
     middleware : [infoParser]
     handler : pageContentHandler.search
   }
+  {
+    route : '/healthchecks'
+    handler : (req, res) ->
+      console.dir 'healthchecks'
+      res.send 'success'
+  }
   # {
   #   type : 'post'
   #   route : '/updateobjectheader/:bucket'
