@@ -1,6 +1,7 @@
 setting = require './app_setting'
 path = require 'path'
 fs = require 'fs'
+_ = require 'underscore'
 # process.env.NODE_ENV = 'nodewebkit'
 isProductionMode = process.env.NODE_ENV == 'production'
 isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
@@ -11,8 +12,17 @@ convertExts = null
 if isProductionMode
   staticMaxAge = 48 * 3600 * 1000
   staticVersion = fs.readFileSync path.join __dirname, '/version'
-  staticHosts = ['http://soss.vicanso.com']
-  host = ['oss.vicanso.com', 'soss.vicanso.com']
+  if _.isArray setting.host
+    host = setting.host
+  else
+    host = [setting.host]
+  if setting.staticHosts
+    if _.isArray setting.staticHosts
+      staticHosts = setting.staticHosts
+    else
+      staticHosts = [setting.staticHosts]
+    host = host.concat staticHosts
+  console.dir host
   convertExts = 
     src : ['.coffee', '.styl']
     dst : ['.js', '.css']

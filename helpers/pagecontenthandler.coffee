@@ -1,6 +1,7 @@
 _ = require 'underscore'
 async = require 'async'
 fs = require 'fs'
+glob = require 'glob'
 crypto = require 'crypto'
 JTOss = require 'jtoss'
 isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
@@ -19,7 +20,7 @@ wrapperCbf = (cbf) ->
 pageContentHandler =
   index : (req, res, cbf) ->
     cbf null, {
-      title : '测试'
+      title : 'OSS管理后台'
     }
   deleteBucket : (req, res, cbf) ->
     cbf = wrapperCbf cbf
@@ -129,6 +130,11 @@ pageContentHandler =
     ossClient.putObjectFromFile data.bucket, "#{data.path || ''}#{data.Filename}", filePath, (err, data) ->
       fs.unlink filePath
       cbf err, data
+  uploadPath : (req, res, cbf) ->
+    uploadPath = req.param 'uploadPath'
+    console.dir uploadPath
+    glob "#{uploadPath}/**", (err, files) ->
+      cbf err, files
   putFiles : (req, res, cbf) ->
     cbf = wrapperCbf cbf
     ossClient = req.ossClient

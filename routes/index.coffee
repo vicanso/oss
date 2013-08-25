@@ -112,6 +112,11 @@ routeInfos = [
     handler : pageContentHandler.setting
   }
   {
+    route : '/uploadpath/:uploadPath'
+    middleware : [sessionParser]
+    handler : pageContentHandler.uploadPath
+  }
+  {
     route : '/createfolder/:bucket'
     middleware : [infoParser]
     handler : pageContentHandler.createFolder
@@ -120,12 +125,6 @@ routeInfos = [
     route : '/search/:bucket'
     middleware : [infoParser]
     handler : pageContentHandler.search
-  }
-  {
-    route : '/healthchecks'
-    handler : (req, res) ->
-      console.dir 'healthchecks'
-      res.send 'success'
   }
   # {
   #   type : 'post'

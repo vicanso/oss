@@ -13,7 +13,12 @@ options =
       launch : [
         __dirname
       ]
-      port : 10000
+      middleware : 
+        mount : '/healthchecks'
+        handler : ->
+          (req, res) ->
+            res.end 'success'
+      port : 10001
     jtApp.init setting, (err, app) ->
       console.error err
   error : (err) ->

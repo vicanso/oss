@@ -100,12 +100,13 @@ do ->
   $('#loadingMask').on 'click', '.bgExec', ->
     $('#loadingMask').hide()
 
-    .ajaxSend( handler(event, jqXHR, ajaxOptions) )
+  $.ajaxSetup {
+    headers : 
+      'v-nocache' : true
+  }
+
   $(document).ajaxStart( ->
     $('#loadingMask').show()
-  ).ajaxSend((e, res, options) ->
-    options.headers ?= {}
-    # options.headers['v-nocache'] = true
   ).ajaxComplete (e, res, options) ->
     if res.status == 500
       content = res.responseJSON?.msg || res.responseText

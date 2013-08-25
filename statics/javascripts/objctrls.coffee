@@ -118,6 +118,11 @@ jQuery ($) ->
         id == model.get 'id'
       if doingModel
         doingModel.set 'progress', Math.floor 100 * complete / total
+    setUploadPath : (uploadPath) ->
+      $.ajax({
+        url : "/uploadpath/#{window.encodeURIComponent(uploadPath)}"
+      }).success (data) =>
+        @putFiles data.join ';'
     initialize : ->
       self = @
       window.OSS_FILTER.on 'change:keyword', (model) =>
@@ -126,10 +131,15 @@ jQuery ($) ->
         if keyword != keywordObj.val()
           keywordObj.val keyword
       if window.APP_MODE == 'node-webkit'
+        uploadPathChooseBtn = @$el.find '#uploadPathInput'
+        @$el.find('.btns .uploadPath .jtBtn').click =>
+          uploadPathChooseBtn.click()
         @$el.find('.btns .uploadBtn .uploadSwfContainer').html('<input type="file" multiple />').hide()
         fileChooseBtn = @$el.find '.btns .uploadBtn .uploadSwfContainer input'
         fileChooseBtn.on 'change', ->
-          self.putFiles this.value
+          self.putFiles @value
+        uploadPathChooseBtn.on 'change', ->
+          self.setUploadPath @value
         @$el.find('.btns .uploadBtn .jtBtn').click =>
           fileChooseBtn.click()
       else
