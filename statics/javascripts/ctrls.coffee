@@ -14,7 +14,7 @@ jQuery ($) ->
       window.OSS_FILTER.nextPage()
     readme : ->
       dlg = new JT.View.Alert {
-        el : $('<div id="reamdeDlg" />').width(600).css 'margin-left', '-300'
+        el : $('<div id="reamdeDlg" />').width(600).css 'margin-left', -300
         model : new JT.Model.Dialog {
           modal : true
           title : 'OSS改进功能'
