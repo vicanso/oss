@@ -18,7 +18,7 @@ options =
         handler : ->
           (req, res) ->
             res.end 'success'
-      port : 10001
+      port : 10000
     jtApp.init setting, (err, app) ->
       console.error err
   error : (err) ->

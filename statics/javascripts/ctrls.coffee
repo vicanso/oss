@@ -3,6 +3,7 @@ jQuery ($) ->
     events : 
       'click .nextPage' : 'nextPage'
       'click .prevPage' : 'prevPage'
+      'click .readme' : 'readme'
       'click .invertSelection' : 'invertSelection'
       'click .attrGroup' : 'attrGroup'
       'click .remove' : 'remove'
@@ -11,6 +12,16 @@ jQuery ($) ->
       if btn.hasClass 'disabled'
         return
       window.OSS_FILTER.nextPage()
+    readme : ->
+      dlg = new JT.View.Alert {
+        el : $('<div id="reamdeDlg" />').width(600).css 'margin-left', '-300'
+        model : new JT.Model.Dialog {
+          modal : true
+          title : 'OSS改进功能'
+          content : $('#readmeContainer').html()
+        }
+      }
+      # dlg.$el.width('80%').css {marg}
     prevPage : ->
       btn = @$el.find '.prevPage'
       if btn.hasClass 'disabled'

@@ -2,7 +2,6 @@ setting = require './app_setting'
 path = require 'path'
 fs = require 'fs'
 _ = require 'underscore'
-# process.env.NODE_ENV = 'nodewebkit'
 isProductionMode = process.env.NODE_ENV == 'production'
 isNodeWebKitMode = process.env.NODE_ENV == 'nodewebkit'
 
@@ -22,7 +21,6 @@ if isProductionMode
     else
       staticHosts = [setting.staticHosts]
     host = host.concat staticHosts
-  console.dir host
   convertExts = 
     src : ['.coffee', '.styl']
     dst : ['.js', '.css']
