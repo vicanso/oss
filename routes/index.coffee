@@ -4,6 +4,7 @@ async = require 'async'
 JTOss = require 'jtoss'
 pageContentHandler = require "#{appPath}/helpers/pagecontenthandler"
 sessionParser = config.sessionParser()
+isProductionMode = process.env.NODE_ENV == 'production'
 infoParser = (req, res, next) ->
   async.series [
     (cbf) ->
@@ -11,8 +12,12 @@ infoParser = (req, res, next) ->
     (cbf) ->
       sess = req.session
       ossInfo = sess?.ossInfo
+      if isProductionMode
+        aliyunOssHost = 'oss-internal.aliyuncs.com'
+      else
+        aliyunOssHost = 'oss.aliyuncs.com'
       if ossInfo?.keyId && ossInfo.keySecret
-        ossClient = new JTOss ossInfo.keyId, ossInfo.keySecret
+        ossClient = new JTOss ossInfo.keyId, ossInfo.keySecret, aliyunOssHost
         if sess.userMetas
           # console.dir sess.userMetas
           ossClient.userMetas sess.userMetas
